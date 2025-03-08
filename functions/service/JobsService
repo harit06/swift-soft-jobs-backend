@@ -1,0 +1,19 @@
+const jobsDAO = require("../dao/JobsDAO")
+const { FIRESTORE_DB } = require("../util/Constants")
+
+const get_latest_jobs_paginated = async (lastDocID) => {
+  const snapshot = await jobsDAO.get_latest_jobs_paginated(lastDocID)
+
+  if (snapshot.empty) {
+    return { data: [], lastDocId: null }
+  }
+
+  lastDocID = snapshot.docs[snapshot.docs.length - 1].data().jid
+
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  return { data: documents, lastDocId: lastDocID }
+}
+
+module.exports = {
+  get_latest_jobs_paginated,
+}
